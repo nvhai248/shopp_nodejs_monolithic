@@ -17,6 +17,10 @@ const UserModel = sequelize.define("users", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  salt: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   name: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -26,5 +30,13 @@ const UserModel = sequelize.define("users", {
     allowNull: true,
   },
 });
+
+// Overwrite for password and salt when return JSON
+UserModel.prototype.toJSON = function () {
+  const values = { ...this.get() };
+  delete values.password;
+  delete values.salt;
+  return values;
+};
 
 module.exports = UserModel;

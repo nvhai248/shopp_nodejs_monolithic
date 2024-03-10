@@ -17,51 +17,67 @@ class AppErr extends Error {
   ) {
     super(description);
     Object.setPrototypeOf(this, new.target.prototype);
+    this.description = description;
     this.name = name;
     this.statusCode = statusCode;
     this.isOperational = isOperational;
     this.errorStack = errorStack;
-    this.logError = logingErrorResponse;
+    this.logs = logingErrorResponse;
     Error.captureStackTrace(this);
   }
 }
 
 // api specific error handling
-class APIError extends AppErr {
-  constructor(
-    name,
-    statusCode = STATUS_CODES.INTERNAL_SERVER_ERROR,
-    description = "INternal Server Error",
-    isOperational = true
-  ) {
-    super(name, statusCode, description, isOperational);
+class APICustomError extends AppErr {
+  constructor(name, statusCode, description, message, isOperational) {
+    super(name, statusCode, description, isOperational, null, message);
   }
 }
 
-// 400
-class BadRequestError extends AppErr {
-  constructor(logingErrorResponse) {
+class InternalServerError extends APICustomError {
+  constructor(description, message) {
     super(
-      "NOT FOUND",
-      STATUS_CODES.BAD_REQUEST,
-      "Bad request",
-      true,
-      false,
-      logingErrorResponse
+      "Internal Server Error",
+      STATUS_CODES.INTERNAL_SERVER_ERROR,
+      description,
+      message,
+      true
     );
   }
 }
 
+// 400
+class BadRequestError extends APICustomError {
+  constructor(description, message) {
+    super("Bad Request", STATUS_CODES.BAD_REQUEST, description, message, true);
+  }
+}
+
+// 401
 class UnauthorizeError extends AppErr {
-  constructor(description) {
-    super("Unauthorize", STATUS_CODES.UNAUTHORIZED, description, true);
+  constructor(description, message) {
+    super("Unauthorize", STATUS_CODES.UNAUTHORIZED, description, message, true);
+  }
+}
+
+class DBError extends APICustomError {
+  constructor(description, message) {
+    super(
+      "Error Database",
+      STATUS_CODES.BAD_REQUEST,
+      description,
+      message,
+      true
+    );
   }
 }
 
 module.exports = {
   AppErr,
-  APIError,
+  InternalServerError,
+  APICustomError,
   BadRequestError,
   UnauthorizeError,
+  DBError,
   STATUS_CODES,
 };

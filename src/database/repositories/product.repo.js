@@ -2,7 +2,7 @@ const { ProductModel } = require("../models");
 
 class ProductRepository {
   constructor() {
-    this.model = new ProductModel();
+    this.model = ProductModel;
   }
 
   createNewUser = (productInfo) => {

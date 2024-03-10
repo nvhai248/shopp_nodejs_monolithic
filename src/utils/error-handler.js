@@ -1,5 +1,11 @@
 const { createLogger, transports } = require("winston");
-const { AppError } = require("./app-errors");
+const {
+  AppError,
+  APICustomError,
+  BadRequestError,
+  InternalServerError,
+  DBError,
+} = require("./app-errors");
 
 const LogErrors = createLogger({
   transports: [
@@ -22,7 +28,7 @@ class ErrorLogger {
 
     return false;
   }
-
+  awd;
   isTrustError(error) {
     if (error instanceof AppError) {
       return error.isOperational;
@@ -66,4 +72,19 @@ const ErrorHandler = async (err, req, res, next) => {
   next();
 };
 
-module.exports = ErrorHandler;
+const ErrorResponse = (error, res) => {
+  if (
+    error instanceof DBError ||
+    error instanceof APICustomError ||
+    error instanceof BadRequestError ||
+    error instanceof InternalServerError
+  ) {
+    return res.status(error.statusCode).send(error);
+  } else {
+    res
+      .status(500)
+      .send(new InternalServerError("Internal Server Error", error.message));
+  }
+};
+
+module.exports = { ErrorHandler, ErrorResponse };

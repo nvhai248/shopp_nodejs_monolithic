@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const ErrorHandler = require("./utils/error-handler");
+const { ErrorHandler } = require("./utils/error-handler");
 const routers = require("./routers");
 
 module.exports = async (app) => {
