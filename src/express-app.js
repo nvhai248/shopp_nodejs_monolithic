@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const ErrorHandler = require("./utils/error-handler");
+const routers = require("./routers");
 
 module.exports = async (app) => {
   app.use(express.json({ limit: "1mb" }));
@@ -9,6 +10,8 @@ module.exports = async (app) => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(express.static(__dirname + "/public"));
+
+  routers(app);
 
   app.use(ErrorHandler);
 };

@@ -11,8 +11,6 @@ const DB_CONFIG = {
   host: "localhost",
 };
 
-console.log(DB_CONFIG);
-
 const APP_SECRET = process.env.APP_SECRET;
 
 module.exports = { PORT, DB_CONFIG, APP_SECRET };

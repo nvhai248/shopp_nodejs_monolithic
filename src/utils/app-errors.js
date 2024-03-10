@@ -40,11 +40,11 @@ class APIError extends AppErr {
 
 // 400
 class BadRequestError extends AppErr {
-  constructor(description = "Bad request", logingErrorResponse) {
+  constructor(logingErrorResponse) {
     super(
       "NOT FOUND",
       STATUS_CODES.BAD_REQUEST,
-      description,
+      "Bad request",
       true,
       false,
       logingErrorResponse
@@ -53,12 +53,8 @@ class BadRequestError extends AppErr {
 }
 
 class UnauthorizeError extends AppErr {
-  constructor(
-    name = "Unauthorize",
-    statusCode = STATUS_CODES.UNAUTHORIZED,
-    description
-  ) {
-    super(name, statusCode, description, true);
+  constructor(description) {
+    super("Unauthorize", STATUS_CODES.UNAUTHORIZED, description, true);
   }
 }
 
