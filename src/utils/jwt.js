@@ -26,7 +26,7 @@ const extractBearerToken = (authorizationHeader) => {
 
 const verifyToken = (token) => {
   try {
-    const payload = jwt.verify(token, secret_key);
+    const payload = jwt.verify(token, APP_SECRET);
     return payload;
   } catch (error) {
     return null;

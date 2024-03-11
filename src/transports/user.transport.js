@@ -15,7 +15,7 @@ class UserTransport {
       const data = await this.service.SignUp(userInfo);
       res
         .status(STATUS_CODES.OK)
-        .send(new SuccessResponse(data, "Successfully signed up!"));
+        .send(new SuccessResponse(data, "Successfully signed up!", null));
     } catch (error) {
       ErrorResponse(error, res);
     }
@@ -28,7 +28,7 @@ class UserTransport {
       const data = await this.service.SignIn(userLogin);
       res
         .status(STATUS_CODES.OK)
-        .send(new SuccessResponse(data, "Successfully signed in!"));
+        .send(new SuccessResponse(data, "Successfully signed in!", null));
     } catch (error) {
       ErrorResponse(error, res);
     }

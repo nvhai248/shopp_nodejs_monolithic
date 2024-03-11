@@ -9,7 +9,7 @@ class UserRepository {
   createNewUser = async (userInfo) => {
     try {
       const newUser = await this.model.create(userInfo);
-      return newUser;
+      return newUser.dataValues;
     } catch (error) {
       throw new DBError(error.message, "Something went wrong with database!");
     }
@@ -22,7 +22,7 @@ class UserRepository {
           email: email,
         },
       });
-      return user;
+      return user.dataValues;
     } catch (error) {
       throw new DBError(error.message, "Something went wrong with database!");
     }

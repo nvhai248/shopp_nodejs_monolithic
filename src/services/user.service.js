@@ -56,8 +56,8 @@ class UserService {
 
       const PwIsCorrect = await validatePassword(
         userLogin.password,
-        user.dataValues.password,
-        user.dataValues.salt
+        user.password,
+        user.salt
       );
 
       if (!PwIsCorrect) {
@@ -67,9 +67,9 @@ class UserService {
         );
       }
 
-      const tokenStr = await generateToken({ id: user.dataValues.id }, "7d");
+      const tokenStr = await generateToken({ id: user.id }, "7d");
 
-      user.dataValues.id = maskId(user.dataValues.id, DBTypeUser);
+      user.id = maskId(user.id, DBTypeUser);
       return {
         token: tokenStr,
         user: user,

@@ -5,6 +5,7 @@ const {
   BadRequestError,
   InternalServerError,
   DBError,
+  UnauthorizeError,
 } = require("./app-errors");
 
 const LogErrors = createLogger({
@@ -76,6 +77,7 @@ const ErrorResponse = (error, res) => {
   if (
     error instanceof DBError ||
     error instanceof APICustomError ||
+    error instanceof UnauthorizeError ||
     error instanceof BadRequestError ||
     error instanceof InternalServerError
   ) {
