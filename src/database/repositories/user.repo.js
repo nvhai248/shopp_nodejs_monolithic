@@ -27,6 +27,19 @@ class UserRepository {
       throw new DBError(error.message, "Something went wrong with database!");
     }
   };
+
+  findUserById = async (id) => {
+    try {
+      const user = await this.model.findOne({
+        where: {
+          id: id,
+        },
+      });
+      return user.dataValues;
+    } catch (error) {
+      throw new DBError(error.message, "Something went wrong with database!");
+    }
+  };
 }
 
 module.exports = UserRepository;

@@ -11,6 +11,16 @@ const DB_CONFIG = {
   host: "localhost",
 };
 
+const REDIS_CONFIG = {
+  host: process.env.REDIS_HOST,
+  socket: {
+    port: process.env.REDIS_PORT,
+    password: process.env.REDIS_PASSWORD,
+  },
+};
+
+const REDIS_URL = `redis://${process.env.REDIS_USERNAME}:${process.env.REDIS_USER_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`;
+
 const APP_SECRET = process.env.APP_SECRET;
 
-module.exports = { PORT, DB_CONFIG, APP_SECRET };
+module.exports = { PORT, DB_CONFIG, APP_SECRET, REDIS_CONFIG, REDIS_URL };

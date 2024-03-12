@@ -53,6 +53,7 @@ class ProductTransport {
           )
         );
     } catch (error) {
+      console.log(error);
       ErrorResponse(error, res);
     }
   };

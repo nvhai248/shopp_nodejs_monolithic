@@ -11,7 +11,7 @@ class ProductService {
     try {
       const data = await this.repository.createNewProduct(productData);
       data.id = maskId(data.id, DBTypeProduct);
-      return;
+      return data;
     } catch (error) {
       throw error;
     }
@@ -21,7 +21,9 @@ class ProductService {
     try {
       limit = limit || 20;
       page = page || 1;
-      const offset = cursor || (page - 1) * limit;
+      const offset = cursor
+        ? unmaskId(cursor, DBTypeProduct)
+        : (page - 1) * limit;
 
       const total = await this.repository.getTotal();
 
@@ -39,9 +41,9 @@ class ProductService {
           total: total,
           fakeCursor: total === 0 ? null : maskId(offset, DBTypeProduct),
           nextCursor:
-            total === 0 || offset + products.length + 1 >= total
+            total === 0 || offset + products.length >= total
               ? null
-              : maskId(offset + products.length + 1, DBTypeProduct),
+              : maskId(offset + products.length, DBTypeProduct),
         },
       };
     } catch (error) {

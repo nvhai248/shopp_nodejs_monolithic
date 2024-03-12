@@ -1,3 +1,4 @@
+const { UserRepository } = require("../database");
 const { STATUS_CODES, UnauthorizeError } = require("../utils/app-errors");
 const { ErrorResponse } = require("../utils/error-handler");
 const { extractBearerToken, verifyToken } = require("../utils/jwt");
@@ -23,7 +24,16 @@ module.exports = async (req, res, next) => {
         .status(STATUS_CODES.UNAUTHORIZED)
         .send(new UnauthorizeError("Unauthorized", "Token is invalid!"));
     }
-    req.user = payload;
+
+    const user = await new UserRepository().findUserById(payload.id);
+
+    if (!user) {
+      return res
+        .status(STATUS_CODES.UNAUTHORIZED)
+        .send(new UnauthorizeError("Unauthorized", "User not found!"));
+    }
+
+    req.user = user;
     next();
   } catch (error) {
     ErrorResponse(error, res);
