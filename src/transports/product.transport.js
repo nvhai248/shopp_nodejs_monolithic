@@ -1,7 +1,7 @@
 const { ProductService } = require("../services");
 const { STATUS_CODES } = require("../utils/app-errors");
 const { ErrorResponse } = require("../utils/error-handler");
-const SuccessResponse = require("../utils/success-response");
+const { SetResponse } = require("../utils/success-response");
 
 class ProductTransport {
   constructor() {
@@ -13,11 +13,12 @@ class ProductTransport {
       const productData = req.body;
       const data = await this.service.createNewProduct(productData);
 
-      res
-        .status(STATUS_CODES.OK)
-        .send(
-          new SuccessResponse(data, "Successfully create new product!", null)
-        );
+      SetResponse(
+        res,
+
+        "Successfully create new product!",
+        null
+      );
     } catch (error) {
       ErrorResponse(error, res);
     }
@@ -29,9 +30,7 @@ class ProductTransport {
 
       const data = await this.service.findProductById(id);
 
-      res
-        .status(STATUS_CODES.OK)
-        .send(new SuccessResponse(data, "Successfully!", null));
+      SetResponse(res, STATUS_CODES.OK, data, "Successfully!", null);
     } catch (error) {
       ErrorResponse(error, res);
     }
@@ -43,15 +42,13 @@ class ProductTransport {
 
       const data = await this.service.getListProducts(limit, page, cursor);
 
-      res
-        .status(STATUS_CODES.OK)
-        .send(
-          new SuccessResponse(
-            data.products,
-            "Successfully!",
-            data.paging.total === 0 ? null : data.paging
-          )
-        );
+      SetResponse(
+        res,
+        STATUS_CODES.OK,
+        data.products,
+        "Successfully!",
+        data.paging.total === 0 ? null : data.paging
+      );
     } catch (error) {
       console.log(error);
       ErrorResponse(error, res);

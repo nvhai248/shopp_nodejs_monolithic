@@ -1,7 +1,7 @@
 const { UserService } = require("../services");
 const { STATUS_CODES } = require("../utils/app-errors");
 const { ErrorResponse } = require("../utils/error-handler");
-const SuccessResponse = require("../utils/success-response");
+const { SetResponse } = require("../utils/success-response");
 
 class UserTransport {
   constructor() {
@@ -13,9 +13,8 @@ class UserTransport {
       const userInfo = req.body;
 
       const data = await this.service.SignUp(userInfo);
-      res
-        .status(STATUS_CODES.OK)
-        .send(new SuccessResponse(data, "Successfully signed up!", null));
+
+      SetResponse(res, STATUS_CODES.OK, data, "Successfully signed up!", null);
     } catch (error) {
       ErrorResponse(error, res);
     }
@@ -26,9 +25,8 @@ class UserTransport {
       const userLogin = req.body;
 
       const data = await this.service.SignIn(userLogin);
-      res
-        .status(STATUS_CODES.OK)
-        .send(new SuccessResponse(data, "Successfully signed in!", null));
+
+      SetResponse(res, STATUS_CODES.OK, data, "Successfully signed in!", null);
     } catch (error) {
       ErrorResponse(error, res);
     }

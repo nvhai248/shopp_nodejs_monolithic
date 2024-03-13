@@ -12,4 +12,8 @@ class SuccessResponse {
   }
 }
 
-module.exports = SuccessResponse;
+const SetResponse = (res, statusCode, data, message, paging) => {
+  res.status(statusCode).send(new SuccessResponse(data, message, paging));
+};
+
+module.exports = { SetResponse };

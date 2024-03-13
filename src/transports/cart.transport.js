@@ -1,7 +1,7 @@
 const { CartService } = require("../services");
 const { STATUS_CODES } = require("../utils/app-errors");
 const { ErrorResponse } = require("../utils/error-handler");
-const SuccessResponse = require("../utils/success-response");
+const { SetResponse } = require("../utils/success-response");
 
 class CartTransport {
   constructor() {
@@ -13,15 +13,15 @@ class CartTransport {
     try {
       const user_id = req.user.id;
       const { product_id, quantity } = req.body;
-      const message = await this.service.addProductToCart(
+      const isDone = await this.service.addProductToCart(
         user_id,
         product_id,
         quantity
       );
 
-      res
-        .status(STATUS_CODES.OK)
-        .send(new SuccessResponse(message, "Cart added successfully!", null));
+      if (isDone)
+        SetResponse(res, STATUS_CODES.OK, true, "Successfully!", null);
+      else SetResponse(res, STATUS_CODES.BAD_REQUEST, false, "Failed!", null);
     } catch (error) {
       ErrorResponse(error, res);
     }
@@ -33,9 +33,44 @@ class CartTransport {
       const user_id = req.user.id;
       const data = await this.service.getCartByUserId(user_id);
 
-      res
-        .status(STATUS_CODES.OK)
-        .send(new SuccessResponse(data, "Successfully!", null));
+      SetResponse(res, STATUS_CODES.OK, data, "Successfully!", null);
+    } catch (error) {
+      ErrorResponse(error, res);
+    }
+  };
+
+  // [PATCH] /carts
+  ChangeQuantityProductOfCart = async (req, res) => {
+    try {
+      const { product_id, quantity } = req.body;
+      const user_id = req.user.id;
+      const isDone = await this.service.changeNumbersOfProductInCart(
+        user_id,
+        product_id,
+        quantity
+      );
+
+      if (isDone)
+        SetResponse(res, STATUS_CODES.OK, true, "Successfully!", null);
+      else SetResponse(res, STATUS_CODES.BAD_REQUEST, false, "Failed!", null);
+    } catch (error) {
+      ErrorResponse(error, res);
+    }
+  };
+
+  // [DELETE] /carts
+  RemoveQuantityFromCart = async (req, res) => {
+    try {
+      const { product_id } = req.body;
+      const user_id = req.user.id;
+      const isDone = await this.service.removeProductFromCart(
+        user_id,
+        product_id
+      );
+
+      if (isDone)
+        SetResponse(res, STATUS_CODES.OK, true, "Successfully!", null);
+      else SetResponse(res, STATUS_CODES.BAD_REQUEST, false, "Failed!", null);
     } catch (error) {
       ErrorResponse(error, res);
     }
