@@ -31,6 +31,40 @@ class UserTransport {
       ErrorResponse(error, res);
     }
   };
+
+  RefreshToken = async (req, res) => {
+    try {
+      const { token_string } = req.body;
+
+      const data = await this.service.RefreshToken(token_string);
+      SetResponse(res, STATUS_CODES.OK, data, "Successfully!", null);
+    } catch (error) {
+      ErrorResponse(error, res);
+    }
+  };
+
+  LogOut = async (req, res) => {
+    try {
+      const { token_string } = req.body;
+      const userId = req.user.id;
+
+      const result = await this.service.LogOut(token_string, userId);
+
+      if (result) {
+        SetResponse(res, STATUS_CODES.OK, null, "Successfully!", null);
+      } else {
+        SetResponse(
+          res,
+          STATUS_CODES.BAD_REQUEST,
+          null,
+          "Records not found!",
+          null
+        );
+      }
+    } catch (error) {
+      ErrorResponse(error, res);
+    }
+  };
 }
 
 module.exports = new UserTransport();

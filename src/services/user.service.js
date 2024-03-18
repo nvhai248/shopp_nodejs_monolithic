@@ -1,9 +1,9 @@
-const { UserRepository } = require("../database");
+const { UserRepository, RefreshTokenRepository } = require("../database");
 const {
   APICustomError,
   STATUS_CODES,
   BadRequestError,
-  DBError,
+  UnauthorizeError,
 } = require("../utils/app-errors");
 const { DBTypeUser } = require("../utils/const");
 const {
@@ -11,12 +11,13 @@ const {
   generatePassword,
   validatePassword,
 } = require("../utils/hash");
-const { generateToken } = require("../utils/jwt");
+const { generateToken, verifyToken } = require("../utils/jwt");
 const { maskId } = require("../utils/mask");
 
 class UserService {
   constructor() {
     this.repository = new UserRepository();
+    this.refreshTokenRepository = new RefreshTokenRepository();
   }
 
   SignUp = async (userInfo) => {
@@ -67,13 +68,58 @@ class UserService {
         );
       }
 
-      const tokenStr = await generateToken({ id: user.id }, "7d");
+      const accessTokenStr = await generateToken({ id: user.id }, 15 * 60); // 15 minutes
+      const refreshTokenStr = await generateToken(
+        { id: user.id },
+        14 * 24 * 60 * 60
+      ); // two weeks
+
+      const refreshToken = await this.refreshTokenRepository.saveToDB({
+        user_id: user.id,
+        refresh_token: refreshTokenStr,
+        expired: 14 * 24 * 60 * 60,
+      });
 
       user.id = maskId(user.id, DBTypeUser);
+      delete user.password;
+      delete user.salt;
       return {
-        token: tokenStr,
+        accessToken: { token_string: accessTokenStr, expired: 15 * 60 },
+        refreshTokenStr: refreshToken,
         user: user,
       };
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  RefreshToken = async (tokenStr) => {
+    try {
+      const refreshTokenDB = await this.refreshTokenRepository.checkInDB(
+        tokenStr
+      );
+
+      const payload = verifyToken(refreshTokenDB.refresh_token);
+      if (!payload) {
+        throw new UnauthorizeError(
+          "Unauthorized!",
+          "Token is invalid! Please re login."
+        );
+      }
+
+      const accessToken = generateToken({ user_id: payload.user_id }, 15 * 60);
+      return {
+        accessToken: { token_string: accessToken, expired: 15 * 60 },
+      };
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  LogOut = async (tokenStr, userId) => {
+    try {
+      const result = this.refreshTokenRepository.removeFromDB(tokenStr, userId);
+      return result;
     } catch (error) {
       throw error;
     }
