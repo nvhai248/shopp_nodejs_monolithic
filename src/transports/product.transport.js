@@ -15,7 +15,8 @@ class ProductTransport {
 
       SetResponse(
         res,
-
+        STATUS_CODES.OK,
+        data,
         "Successfully create new product!",
         null
       );
@@ -50,7 +51,24 @@ class ProductTransport {
         data.paging.total === 0 ? null : data.paging
       );
     } catch (error) {
-      console.log(error);
+      ErrorResponse(error, res);
+    }
+  };
+
+  searchProducts = async (req, res) => {
+    try {
+      const { limit, page, value } = req.query;
+
+      const data = await this.service.searchProducts(value, limit, page);
+
+      SetResponse(
+        res,
+        STATUS_CODES.OK,
+        data.products,
+        "Successfully!",
+        data.paging.total === 0 ? null : data.paging
+      );
+    } catch (error) {
       ErrorResponse(error, res);
     }
   };

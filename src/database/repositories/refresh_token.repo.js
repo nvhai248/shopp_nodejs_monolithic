@@ -22,7 +22,8 @@ class RefreshTokenRepository {
           refresh_token: tokenStr,
         },
       });
-      return result.dataValues;
+
+      return result ? result.dataValues : null;
     } catch (error) {
       throw new DBError(error.message, "Something went wrong with DB!");
     }

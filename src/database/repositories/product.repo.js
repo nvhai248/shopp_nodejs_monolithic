@@ -1,9 +1,11 @@
 const { DBError } = require("../../utils/app-errors");
+const client = require("../../utils/elasticsearch");
 const { ProductModel } = require("../models");
 
 class ProductRepository {
   constructor() {
     this.model = ProductModel;
+    this.elasticClient = client;
   }
 
   createNewProduct = async (productInfo) => {
@@ -48,6 +50,48 @@ class ProductRepository {
       });
 
       return res.dataValues;
+    } catch (error) {
+      throw new DBError(error.message, "Something went wrong with database!");
+    }
+  };
+
+  searchProducts = async (searchContent, limit, offset) => {
+    try {
+      const response = await client.search({
+        index: "products",
+        body: {
+          query: {
+            multi_match: {
+              query: searchContent,
+              fields: ["name", "shop.name"],
+            },
+          },
+          size: limit,
+          from: offset,
+        },
+      });
+
+      return response.hits.hits;
+    } catch (error) {
+      throw new DBError(error.message, "Something went wrong with database!");
+    }
+  };
+
+  getSearchTotal = async (searchContent) => {
+    try {
+      const response = await client.search({
+        index: "products",
+        body: {
+          query: {
+            multi_match: {
+              query: searchContent,
+              fields: ["name", "shop.name"],
+            },
+          },
+        },
+      });
+
+      return response.hits.total.value;
     } catch (error) {
       throw new DBError(error.message, "Something went wrong with database!");
     }

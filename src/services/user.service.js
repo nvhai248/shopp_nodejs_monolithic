@@ -99,6 +99,13 @@ class UserService {
         tokenStr
       );
 
+      if (!refreshTokenDB) {
+        throw new UnauthorizeError(
+          "Unauthorized!",
+          "Token is invalid! Please re login."
+        );
+      }
+
       const payload = verifyToken(refreshTokenDB.refresh_token);
       if (!payload) {
         throw new UnauthorizeError(
@@ -107,7 +114,7 @@ class UserService {
         );
       }
 
-      const accessToken = generateToken({ user_id: payload.user_id }, 15 * 60);
+      const accessToken = generateToken({ id: payload.id }, 15 * 60);
       return {
         accessToken: { token_string: accessToken, expired: 15 * 60 },
       };

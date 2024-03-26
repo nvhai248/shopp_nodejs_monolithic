@@ -62,6 +62,33 @@ class ProductService {
       throw error;
     }
   };
+
+  searchProducts = async (searchContent, limit, page) => {
+    try {
+      limit = parseInt(limit) || 20;
+      page = parseInt(page) || 1;
+
+      const offset = (page - 1) * limit;
+
+      const total = await this.repository.getSearchTotal(searchContent);
+      const products = await this.repository.searchProducts(
+        searchContent,
+        limit,
+        offset
+      );
+
+      return {
+        products: products,
+        paging: {
+          limit: limit,
+          page: page,
+          total: total,
+        },
+      };
+    } catch (error) {
+      throw error;
+    }
+  };
 }
 
 module.exports = ProductService;

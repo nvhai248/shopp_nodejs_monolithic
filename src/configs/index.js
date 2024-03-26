@@ -1,3 +1,5 @@
+const fs = require("fs");
+
 require("dotenv").config();
 
 const PORT = 8080;
@@ -23,4 +25,23 @@ const REDIS_URL = `redis://${process.env.REDIS_USERNAME}:${process.env.REDIS_USE
 
 const APP_SECRET = process.env.APP_SECRET;
 
-module.exports = { PORT, DB_CONFIG, APP_SECRET, REDIS_CONFIG, REDIS_URL };
+const ELASTIC_CONFIG = {
+  node: process.env.ES_HOST,
+  auth: {
+    username: process.env.ES_USERNAME,
+    password: process.env.ES_PW,
+  },
+  tls: {
+    ca: fs.readFileSync("http-cert.crt"),
+    rejectUnauthorized: false,
+  },
+};
+
+module.exports = {
+  PORT,
+  DB_CONFIG,
+  APP_SECRET,
+  REDIS_CONFIG,
+  REDIS_URL,
+  ELASTIC_CONFIG,
+};
